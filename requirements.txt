@@ -1,6 +1,7 @@
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
-pydantic
-streamlit
-requests
+aiosqlite
+pydantic[email]
+pyjwt
+pwdlib[bcrypt]
