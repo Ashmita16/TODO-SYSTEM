@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from repositories.repository import CategoryRepository, TodoRepository
-from schemas.schemas import CategoryCreate, CategoryUpdate, TodoCreate, TodoUpdate
+from schemas.todo_schema import CategoryCreate, CategoryUpdate, TodoCreate, TodoUpdate
 from exceptions.user_exception import ResourceNotFoundException, DuplicateResourceException, ResourceInUseException
 from models.models import Todo
 

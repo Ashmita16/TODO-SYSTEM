@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from models.models import Category, Todo
-from schemas.schemas import CategoryCreate, CategoryUpdate, TodoCreate, TodoUpdate
+from schemas.todo_schema import CategoryCreate, CategoryUpdate, TodoCreate, TodoUpdate
 
 class CategoryRepository:
     def get_all(self, db: Session):

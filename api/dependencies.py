@@ -1,20 +1,16 @@
 from datetime import datetime, timezone
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
 from config.config import settings
-from dependencies.db_dependency import get_db
+from db.database import get_db
 from models.user import User
 
-security = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security), 
-    db: Session = Depends(get_db)
-):
-    token = credentials.credentials
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -24,7 +20,7 @@ def get_current_user(
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         username: str = payload.get("sub")
-        iat: int = payload.get("iat")
+        iat: int = payload.get("iat") 
         
         if username is None or iat is None:
             raise credentials_exception
@@ -39,16 +35,14 @@ def get_current_user(
     if user.password_changed_at is not None:
         token_issued_at = datetime.fromtimestamp(iat, tz=timezone.utc)
         pwd_changed_at = user.password_changed_at
-
+        
         if pwd_changed_at.tzinfo is None:
             pwd_changed_at = pwd_changed_at.replace(tzinfo=timezone.utc)
-        else:
-            pwd_changed_at = pwd_changed_at.astimezone(timezone.utc)
 
         if pwd_changed_at > token_issued_at:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="PASSWORD WAS CHANGED RECENTLY. PLEASE LOG IN AGAIN"
+                detail="PASSWORD WAS CHANGED RECENTLY. PLEASE LOG IN AGAIN."
             )
 
     return user

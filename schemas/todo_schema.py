@@ -1,8 +1,10 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, field_serializer
 
 class CategoryBase(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
 
 class CategoryCreate(CategoryBase):
     pass
@@ -18,7 +20,7 @@ class CategoryResponse(CategoryBase):
 
 class TodoBase(BaseModel):
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     is_completed: bool = False
     category_id: int
 
@@ -26,18 +28,24 @@ class TodoCreate(TodoBase):
     pass
 
 class TodoUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    is_completed: bool | None = None
-    category_id: int | None = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_completed: Optional[str] = None
+    category_id: Optional[int] = None
 
 class TodoResponse(BaseModel):
     id: int
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     is_completed: bool
     category_id: int
     category: CategoryResponse
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer("created_at", "updated_at")
+    def serialize_dt(self, dt: datetime, _info) -> str:
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
 
     class Config:
         from_attributes = True
