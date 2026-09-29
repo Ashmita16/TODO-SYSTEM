@@ -119,7 +119,6 @@ def get_todos(
     }
 
 
-# EXPORT TODOS
 @router.get(
     "/export",
     response_class=Response
@@ -170,8 +169,6 @@ def export_todos(
         }
     )
 
-
-# GET TODO BY ID
 @router.get(
     "/{todo_id}",
     response_model=SuccessResponse[TodoResponse]
@@ -195,8 +192,6 @@ def get_todo(
         "meta": None
     }
 
-
-# UPDATE TODO
 @router.put(
     "/{todo_id}",
     response_model=SuccessResponse[TodoResponse]
@@ -222,8 +217,6 @@ def update_todo(
         "meta": None
     }
 
-
-# DELETE TODO
 @router.delete(
     "/{todo_id}",
     status_code=status.HTTP_200_OK,
@@ -248,8 +241,6 @@ def delete_todo(
         "meta": None
     }
 
-
-# DELETE TODOS BY CATEGORY
 @router.delete(
     "/category/{category_id}",
     status_code=status.HTTP_200_OK,
