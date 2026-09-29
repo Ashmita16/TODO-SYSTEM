@@ -1,57 +1,42 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, field_serializer
+from pydantic import BaseModel, ConfigDict, field_serializer
 
-class CategoryBase(BaseModel):
-    name: str
-    description: Optional[str] = None
 
-class CategoryCreate(CategoryBase):
-    pass
-
-class CategoryUpdate(CategoryBase):
-    pass
-
-class CategoryResponse(CategoryBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-class TodoBase(BaseModel):
+class TodoCreate(BaseModel):
     title: str
-    description: Optional[str] = None
-    is_completed: bool = False
+    description: str | None = None
     category_id: int
+    is_completed: bool = False
 
-class TodoCreate(TodoBase):
-    pass
 
 class TodoUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    is_completed: Optional[str] = None
-    category_id: Optional[int] = None
+    title: str | None = None
+    description: str | None = None
+    category_id: int | None = None
+    is_completed: bool | None = None
+
 
 class TodoResponse(BaseModel):
     id: int
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     is_completed: bool
     category_id: int
-    category: CategoryResponse
     created_at: datetime
     updated_at: datetime
 
-    @field_serializer("created_at", "updated_at")
-    def serialize_dt(self, dt: datetime, _info) -> str:
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    @field_serializer("created_at", "updated_at")
+    def format_datetime(self, value: datetime) -> str:
+        return value.strftime("%d-%m-%Y %H:%M:%S")
+
 
 class PaginatedTodoResponse(BaseModel):
     total: int
     page: int
     limit: int
+    total_pages: int
     items: list[TodoResponse]
+
+    model_config = ConfigDict(from_attributes=True)

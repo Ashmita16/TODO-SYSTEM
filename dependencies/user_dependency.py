@@ -45,10 +45,12 @@ def get_current_user(
         else:
             pwd_changed_at = pwd_changed_at.astimezone(timezone.utc)
 
+        pwd_changed_at = pwd_changed_at.replace(microsecond=0)
+
         if pwd_changed_at > token_issued_at:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="PASSWORD WAS CHANGED RECENTLY. PLEASE LOG IN AGAIN"
+                detail="PASSWORD WAS CHANGED RECENTLY. PLEASE LOG IN AGAIN!"
             )
 
     return user

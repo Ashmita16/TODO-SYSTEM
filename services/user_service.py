@@ -4,8 +4,17 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 
 from repositories.user_repo import UserRepository
-from schemas.user_schema import UserCreate, PasswordChange
-from utils.auth import verify_password, create_access_token
+
+from schemas.user_schema import (
+    UserCreate,
+    PasswordChange
+)
+
+from utils.auth import (
+    verify_password,
+    create_access_token
+)
+
 from models.user import User
 
 from errors.exception import (
@@ -16,30 +25,69 @@ from errors.exception import (
     SamePasswordError
 )
 
+from services.email_services import send_todos_email
+
 
 class UserService:
 
     def __init__(self):
         self.user_repo = UserRepository()
 
-    def register_user(
+    async def register_user(
         self,
         db: Session,
         schema: UserCreate
     ):
+        existing_user = self.user_repo.get_by_username(
+            db,
+            schema.username
+        )
 
-        if self.user_repo.get_by_username(db, schema.username):
+        if existing_user is not None:
 
             raise UserAlreadyExistsError(
                 detail={
-                    "message": "Email with this user id already exists"
+                    "message":
+                    "USER WITH THIS USERNAME ALREADY  EXISTS"
                 }
             )
 
-        return self.user_repo.create_user(
+        user = self.user_repo.create_user(
             db,
             schema
         )
+
+        return user
+
+    async def email_todos(
+        self,
+        db: Session,
+        current_user: User
+    ):
+
+        from models.models import Todo
+
+        todos = (
+            db.query(Todo)
+            .filter(
+                Todo.user_id == current_user.id
+            )
+            .all()
+        )
+
+        await send_todos_email(
+            recipient_email=current_user.username,
+            username=current_user.username,
+            todos=todos
+        )
+
+        return {
+            "message":
+            "TODO LIST HAS BEEN SENT TO YOUR EMAIL!",
+
+            "todo_count":
+            len(todos)
+        }
 
     def authenticate_user(
         self,
@@ -60,7 +108,8 @@ class UserService:
 
             raise InvalidCredentialsError(
                 detail={
-                    "message": "Invalid username or password"
+                    "message":
+                    "Invalid username or password"
                 }
             )
 
@@ -68,7 +117,8 @@ class UserService:
 
             raise AccountDisabledError(
                 detail={
-                    "message": "User account is disabled"
+                    "message":
+                    "User account is disabled"
                 }
             )
 
@@ -92,7 +142,8 @@ class UserService:
 
             raise IncorrectPasswordError(
                 detail={
-                    "message": "The current password is incorrect"
+                    "message":
+                    "THE CURRENT PASSWORD IS INCORRECT!"
                 }
             )
 
@@ -103,10 +154,10 @@ class UserService:
 
             raise SamePasswordError(
                 detail={
-                    "message": "New password cannot be same as current password"
+                    "message":
+                    "NEW PASSWORD CANNOT BE SAME AS CURRENT PASSWORD!"
                 }
             )
-
         now_utc = datetime.now(timezone.utc)
 
         current_user.password_changed_at = now_utc
@@ -122,8 +173,11 @@ class UserService:
         )
 
         return {
-            "message": "PASSWORD CHANGED SUCCESSFULLY!",
-            "password_changed_at": ist_time.strftime(
+            "message":
+            "PASSWORD CHANGED SUCCESSFULLY!",
+
+            "password_changed_at":
+            ist_time.strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
         }

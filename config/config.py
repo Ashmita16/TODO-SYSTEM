@@ -1,8 +1,7 @@
 import os
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_state = os.getenv("APP_ENV", "dev")
-env_file = f".env.{env_state}"
 
 class Settings(BaseSettings):
     APP_ENV: str = "dev"
@@ -11,8 +10,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     DATABASE_URL: str = "sqlite:///./test.db"
 
-    class Config:
-        env_file = env_file
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file=f".env.{env_state}",
+        extra="ignore"
+    )
 
 settings = Settings()
