@@ -115,6 +115,6 @@ YOURS TODO
     try:
         fast_mail = FastMail(mail_config)
         await fast_mail.send_message(message)
-        print("--> [EMAIL SUCCESS] Todos email delivered to Mailtrap!")
+        print("TODOS DELIVERED!")
     except Exception as e:
-        print(f"--> [EMAIL ERROR] Failed to send todos email: {e}")
+        print(f"FALIED TO SEND TODOS: {e}")
