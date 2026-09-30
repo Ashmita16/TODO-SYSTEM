@@ -90,7 +90,7 @@ async def send_todos_email(recipient_email: str, username: str, todos: list):
     )
 
     message = MessageSchema(
-        subject="Your TODO List - TODO MANAGEMENT SYSTEM",
+        subject="YOUR'S TODO LIST - TODO MANAGEMENT SYSTEM",
         recipients=[recipient_email],
         body=f"""
 Hello {username},
