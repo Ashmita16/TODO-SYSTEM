@@ -8,14 +8,12 @@ from fastapi import (
 )
 
 from fastapi.responses import Response
-
 from sqlalchemy.orm import Session
 
 from dependencies.db_dependency import get_db
 from dependencies.user_dependency import get_current_user
 
 from schemas.common_schema import SuccessResponse
-
 from schemas.todo_schema import (
     TodoCreate,
     TodoUpdate,
@@ -56,7 +54,6 @@ def create_todo(
         "data": todo,
         "meta": None
     }
-
 
 @router.get(
     "/",
@@ -114,7 +111,9 @@ def get_todos(
             "page": result["page"],
             "limit": result["limit"],
             "total": result["total"],
-            "total_pages": result["total_pages"]
+            "total_pages": result["total_pages"],
+            "has_prev_page": result["has_prev_page"],
+            "has_next_page": result["has_next_page"]
         }
     }
 
@@ -136,7 +135,6 @@ def export_todos(
     todo_data = []
 
     for todo in todos:
-
         todo_data.append({
             "id": todo.id,
             "title": todo.title,
@@ -169,6 +167,32 @@ def export_todos(
         }
     )
 
+@router.delete(
+    "/category/{category_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessResponse[dict]
+)
+def delete_todos_by_category(
+    category_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    deleted_count = todo_service.delete_by_category(
+        db,
+        category_id,
+        current_user.id
+    )
+
+    return {
+        "success": True,
+        "message": "Todos deleted successfully",
+        "data": {
+            "deleted_count": deleted_count
+        },
+        "meta": None
+    }
+
 @router.get(
     "/{todo_id}",
     response_model=SuccessResponse[TodoResponse]
@@ -191,6 +215,7 @@ def get_todo(
         "data": todo,
         "meta": None
     }
+
 
 @router.put(
     "/{todo_id}",
@@ -217,6 +242,7 @@ def update_todo(
         "meta": None
     }
 
+
 @router.delete(
     "/{todo_id}",
     status_code=status.HTTP_200_OK,
@@ -238,31 +264,5 @@ def delete_todo(
         "success": True,
         "message": "Todo deleted successfully",
         "data": None,
-        "meta": None
-    }
-
-@router.delete(
-    "/category/{category_id}",
-    status_code=status.HTTP_200_OK,
-    response_model=SuccessResponse[dict]
-)
-def delete_todos_by_category(
-    category_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-
-    deleted_count = todo_service.delete_by_category(
-        db,
-        category_id,
-        current_user.id
-    )
-
-    return {
-        "success": True,
-        "message": "Todos deleted successfully",
-        "data": {
-            "deleted_count": deleted_count
-        },
         "meta": None
     }
