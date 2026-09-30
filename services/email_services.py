@@ -47,7 +47,7 @@ def create_todo_json(todos):
 
 
 async def send_welcome_email(recipient_email: str, username: str):
-    print(f"--> [EMAIL] Sending welcome email to: {recipient_email}")
+    print(f"SENDING WELCOME EMAIL TO: {recipient_email}")
     
     message = MessageSchema(
         subject="WELCOME TO TODO MANAGEMENT SYSTEM",
