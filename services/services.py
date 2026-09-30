@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import Session
 
 from repositories.repository import (
@@ -229,11 +228,16 @@ class TodoService:
             else 1
         )
 
+        has_prev_page = page > 1
+        has_next_page = page < total_pages
+
         return {
             "total": total,
             "page": page,
             "limit": limit,
             "total_pages": total_pages,
+            "has_prev_page": has_prev_page,
+            "has_next_page": has_next_page,
             "items": items
         }
 
