@@ -79,7 +79,7 @@ YOURS TODO
         print(f"FAILED TO SEND WELCOME EAMIL: {e}")
 
 async def send_todos_email(recipient_email: str, username: str, todos: list):
-    print(f"--> [EMAIL] Exporting todos email for: {recipient_email}")
+    print(f"EXPORTING TODOS EMAIL FOR: {recipient_email}")
     json_data = create_todo_json(todos)
 
     json_bytes = io.BytesIO(json_data.encode("utf-8"))
