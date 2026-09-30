@@ -42,7 +42,7 @@ app.add_exception_handler(
 )
 
 
-@app.get("/", tags=["Health Check"])
+@app.get("/", tags=["Root Check"])
 def root():
     return {
         "message": "TODO MANAGEMENT SYSTEM IS RUNNING SUCCESSFULLY!"
