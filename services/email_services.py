@@ -74,9 +74,9 @@ YOURS TODO
     try:
         fast_mail = FastMail(mail_config)
         await fast_mail.send_message(message)
-        print("--> [EMAIL SUCCESS] Welcome email delivered to Mailtrap!")
+        print("WELCOME EMAIL DELIVERED!")
     except Exception as e:
-        print(f"--> [EMAIL ERROR] Failed to send welcome email: {e}")
+        print(f"FAILED TO SEND WELCOME EAMIL: {e}")
 
 async def send_todos_email(recipient_email: str, username: str, todos: list):
     print(f"--> [EMAIL] Exporting todos email for: {recipient_email}")
